@@ -9,7 +9,7 @@ import jwt from 'jsonwebtoken';
 import router from './routes';
 
 const app:Express=express();
-const port=process.env.HH_SS_PORT || 8000;
+const port= 8000;
 
 //creating http server
 let server=http.createServer(app);
@@ -17,7 +17,7 @@ let server=http.createServer(app);
 //creating socket server
 const io=new Server(server,{
     cors:{
-        origin:process.env.CLIENT_ORIGIN
+        origin:"*"
     }
 });
 
