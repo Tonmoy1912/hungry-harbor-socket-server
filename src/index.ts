@@ -6,7 +6,11 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import { request_validation } from './middleware/request_validation';
 import jwt from 'jsonwebtoken';
-import router from './routes';
+import router from './api';
+import { connectDb } from './config/mongooseConfig/mongoose_config';
+import { join_owner_room } from './config/ownerRoom/owner_room';
+
+connectDb();
 
 const app:Express=express();
 const port= 8000;
@@ -24,18 +28,26 @@ const io=new Server(server,{
 io.on("connection",(socket)=>{
 
     // comment out before deployment
-    console.log(`A user is connected with socket id ${socket.id}`);
+    // console.log(`A user is connected with socket id ${socket.id}`);
     socket.on("disconnect",()=>{
-        console.log(`${socket.id} gets disconnected`);
+        // console.log(`${socket.id} gets disconnected`);
+    });
+
+    socket.on("disconnecting",function(){
+        let rooms=new Set(socket.rooms);
+        rooms.forEach(function(roomId){
+            socket.leave(roomId);
+        });
     });
 
     //logic to join a room with userId
     socket.emit("send-token","");
-    socket.on('set-token',function(token:string){
+    socket.on('set-token',async function(token:string){
         try{
             let obj:any=jwt.verify(token,process.env.SOCKENT_CONNECT_SECRET||"");
             socket.join(obj._id);
-            console.log("socket rooms",socket.rooms);
+            await join_owner_room(socket,obj._id);
+            // console.log("socket rooms",socket.rooms);
         }
         catch(err:any){
             socket.disconnect(true);
