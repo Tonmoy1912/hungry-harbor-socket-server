@@ -35,11 +35,25 @@ export async function readyOrder(req:any,res:Response) {
     }
 }
 
+//for owner
 export async function userCancelOrder(req:any,res:Response) {
     try{
         const body:UserCancelOrderBody=req.body;
         req.io.to(process.env.HH_OWNER_ROOM).emit("userCancelOrder",{...body});
         return res.status(200).json({ok:true,message:"userCancelOrder event emitted."});
+    }
+    catch(err:any){
+        return res.status(500).json({ok:false,message:err.message});
+    }
+}
+
+//for owner
+export async function newOrder(req:any,res:Response) {
+    try{
+        const body:{_id:string}=req.body;
+        req.io.to(process.env.HH_OWNER_ROOM).emit("newOrder",{...body});
+        // console.log("newOrder",body);
+        return res.status(200).json({ok:true,message:"newOrder event emitted."});
     }
     catch(err:any){
         return res.status(500).json({ok:false,message:err.message});
