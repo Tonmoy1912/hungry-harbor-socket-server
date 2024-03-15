@@ -22,7 +22,7 @@ let server=http.createServer(app);
 const io=new Server(server,{
     cors:{
         origin:"*"
-    }
+    },
 });
 
 io.on("connection",(socket)=>{
@@ -67,8 +67,6 @@ app.use(function(req:any,res:Response,next:any){
     next();
 });
 
-app.use("/api",router);
-
 app.get("/",function(req:any,res:Response){
     try{
         // req.io.emit("broadcast-event","home backend api called");
@@ -78,6 +76,8 @@ app.get("/",function(req:any,res:Response){
         return res.status(500).json({ok:false,message:err.message});
     }
 });
+
+app.use("/api",router);
 
 //global catch
 app.use(function (err:any, req:Request, res:Response, next:any) {
