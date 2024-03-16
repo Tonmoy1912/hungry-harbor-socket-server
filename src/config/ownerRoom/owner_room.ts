@@ -1,4 +1,4 @@
-import Owners from "../../model/userSchema";
+import Owners from "../../model/ownerSchema";
 
 export async function join_owner_room(socket:any,userId:string){
     try{

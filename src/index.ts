@@ -9,6 +9,8 @@ import jwt from 'jsonwebtoken';
 import router from './api';
 import { connectDb } from './config/mongooseConfig/mongoose_config';
 import { join_owner_room } from './config/ownerRoom/owner_room';
+import schedue from 'node-schedule';
+import { createTodaysStats, deleteOldStats, deleteUnsettledOrders } from './controller/scheduled_job';
 
 connectDb();
 
@@ -89,3 +91,10 @@ server.listen(port,function(){
     console.log(`The server is running on port ${port}`);
 });
 
+//scheduling daily job
+//will be invoked every day at 3:00 am
+schedue.scheduleJob("0 3 * * *",createTodaysStats);
+//will be invoked on the first day of every month at 5:00 am
+schedue.scheduleJob("0 5 1 * *",deleteOldStats);
+//will be invoked in every sunday at 2:00 am
+schedue.scheduleJob("0 1 * * 0",deleteUnsettledOrders);
