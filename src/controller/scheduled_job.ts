@@ -1,5 +1,6 @@
 import Stats from "../model/statsSchema";
 import Orders from "../model/orderSchema";
+import Notifications from "../model/notificationSchema";
 
 //will be invoked every day
 export async function createTodaysStats() {
@@ -38,7 +39,7 @@ export async function deleteOldStats() {
         const lowerMonthLimit = new Date(curDate);
         // console.log(lowerMonthLimit.toLocaleString());
         // console.log(upperMonthLimit.toLocaleString());
-        await Stats.deleteMany({date:{$lt:lowerMonthLimit}});
+        await Stats.deleteMany({ date: { $lt: lowerMonthLimit } });
     }
     catch (err: any) {
         console.log("Error while deleting old order.");
@@ -59,5 +60,35 @@ export async function deleteUnsettledOrders() {
     }
     catch (err: any) {
         console.log("Error while deleting unsettled order");
+    }
+}
+
+//will be invoked on the first day of every month
+export async function deleteNotifications() {
+    try {
+        let curDate = new Date();
+        curDate.setHours(0, 0, 0);
+        const upperLimit = new Date(curDate);
+        curDate.setMonth(curDate.getMonth() - 2);
+        const lowerLimit = new Date(curDate);
+        await Notifications.deleteMany({ date: { $lt: lowerLimit } });
+    }
+    catch (err: any) {
+        console.log("Error while deleting notifications");
+    }
+}
+
+//will be invoked on the first day of every month
+export async function deleteOrders() {
+    try {
+        let curDate = new Date();
+        curDate.setHours(0, 0, 0);
+        const upperLimit = new Date(curDate);
+        curDate.setMonth(curDate.getMonth() - 6);
+        const lowerLimit = new Date(curDate);
+        await Orders.deleteMany({ date: { $lt: lowerLimit } });
+    }
+    catch (err: any) {
+        console.log("Error while deleting orders");
     }
 }
